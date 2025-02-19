@@ -42,4 +42,9 @@ contract ERC20WithCallback is MyToken {
         }
         return size > 0;
     }
+
+    // 给测试用户铸造代币
+    function mint(address to, uint256 amount) public {
+        _mint(to, amount);
+    }
 }

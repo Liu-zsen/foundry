@@ -3,4 +3,5 @@ src = "src"
 out = "out"
 libs = ["lib"] 
 
+solc_version = "0.8.28"  # 指定你需要的 Solidity 版本
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
