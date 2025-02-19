@@ -8,7 +8,6 @@ contract BankTest is Test {
     Bank public bank;
     address public user;
 
-    event Deposit(address indexed user, uint256 amount);
     // 在每个测试之前初始化 Bank 合约和用户地址
     function setUp() public {
         bank = new Bank();
@@ -27,7 +26,7 @@ contract BankTest is Test {
 
         // 先设置事件期望 断言 Deposit 事件已被触发
         vm.expectEmit(true, true, true, true);
-        emit Deposit(user, depositAmount);
+        emit Bank.Deposit(user, depositAmount);
 
         // 执行存款
         vm.prank(user); // 模拟用户调用
