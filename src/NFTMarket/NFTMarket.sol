@@ -2,9 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../tokenBank/ERC20WithCallback.sol";
 
-contract NFTMarket {
+/**
+ * @title 编写一个简单的 NFTMarket 合约，使用自己发行的ERC20 扩展 Token 来买卖 NFT， NFTMarket 的函数有：
+    list() : 实现上架功能，NFT 持有者可以设定一个价格（需要多少个 Token 购买该 NFT）并上架 NFT 到 NFTMarket，上架之后，其他人才可以购买。
+    buyNFT() : 普通的购买 NFT 功能，用户转入所定价的 token 数量，获得对应的 NFT。
+    实现ERC20 扩展 Token 所要求的接收者方法 tokensReceived  ，在 tokensReceived 中实现NFT 购买功能。
+ * @author : 
+ */
+contract NFTMarket is ITokenReceiver {
     // 扩展的 ERC20 Token 合约地址
     address public tokenAddress;
 
@@ -15,6 +22,8 @@ contract NFTMarket {
     struct Listing {
         uint256 price; // NFT 的价格（以 ERC20 Token 为单位）
         address seller; // NFT 的卖家
+        bool isListed;
+        address tokenAddress;
     }
 
     // 记录每个上架的 NFT 信息
@@ -46,7 +55,9 @@ contract NFTMarket {
         // 记录上架信息
         listings[tokenId] = Listing({
             price: price,
-            seller: msg.sender
+            seller: msg.sender,
+            isListed: true,
+            tokenAddress: tokenAddress
         });
 
         // 触发上架事件
@@ -95,6 +106,10 @@ contract NFTMarket {
 
         // 检查支付的 Token 数量是否足够
         require(amount >= listing.price, "Insufficient payment");
+
+        // 将代币转给卖家
+        bool success = IERC20(tokenAddress).transfer(listing.seller, amount);
+        require(success, "Token transfer to seller failed");
 
         // 转移 NFT 给买家
         IERC721(nftAddress).safeTransferFrom(listing.seller, sender, tokenId);

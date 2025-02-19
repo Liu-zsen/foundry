@@ -10,9 +10,10 @@ contract MyToken is ERC20 {
         _mint(msg.sender, initialSupply);
     }
 }
-// 目标合约需要实现的接口
+// 目标合约需要实现的接口 记录用户存款
+// 将接口声明为独立的接口
 interface ITokenReceiver {
-    function tokensReceived(address sender, uint256 amount) external returns (bool);
+    function tokensReceived(address sender, uint256 amount, bytes memory data) external returns (bool);
 }
 /**
 扩展 ERC20 合约 ，添加一个有hook 功能的转账函数，如函数名为：transferWithCallback,
@@ -20,15 +21,16 @@ interface ITokenReceiver {
 **/
 contract ERC20WithCallback is MyToken {
     constructor(uint256 initialSupply) MyToken(initialSupply) { }
-    // 带回调的转账函数
-    function transferWithCallback(address recipient, uint256 amount) external returns (bool) {
+    // 带回调的转账函数  
+    // 修改带回调的转账函数，添加 data 参数
+    function transferWithCallback(address recipient, uint256 amount, bytes memory data) external returns (bool) {
         // 转账
         bool success = transfer(recipient, amount);
         require(success, "Transfer failed");
 
         // 如果目标地址是合约，调用其 tokensReceived 方法
         if (isContract(recipient)) {
-            bool callbackSuccess = ITokenReceiver(recipient).tokensReceived(msg.sender, amount);
+            bool callbackSuccess = ITokenReceiver(recipient).tokensReceived(msg.sender, amount, data);
             require(callbackSuccess, "Callback failed");
         }
         return true;

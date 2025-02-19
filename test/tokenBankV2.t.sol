@@ -38,7 +38,8 @@ contract TokenBankV2Test is Test {
     function test_TransferWithCallback() public {
         // 测试通过transferWithCallback存款
         uint256 depositAmount = 100 ether;
-        token.transferWithCallback(address(bank), depositAmount);
+        bytes memory data = abi.encode(0);
+        token.transferWithCallback(address(bank), depositAmount, data);
         
         assertEq(bank.balances(address(token), alice), depositAmount, "Incorrect deposit amount for callback");
         assertEq(token.balanceOf(address(bank)), depositAmount, "Incorrect bank balance");
@@ -60,6 +61,8 @@ contract TokenBankV2Test is Test {
         // 部署另一个代币来测试无效代币调用
         ERC20WithCallback invalidToken = new ERC20WithCallback(1000000 * 10**18); // 铸造 1000000 个代币
         vm.expectRevert("Invaild Token");
-        invalidToken.transferWithCallback(address(bank), 100 ether);
+
+        bytes memory data = abi.encode(0);
+        invalidToken.transferWithCallback(address(bank), 100 ether, data);
     }
 }
