@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 contract Bank {
-    mapping(address => uint) public balanceOf;
+    mapping(address => uint256) public balanceOf;
 
     event Deposit(address indexed user, uint256 amount);
 

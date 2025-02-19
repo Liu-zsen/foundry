@@ -2,7 +2,14 @@
 pragma solidity ^0.8.13;
 import "./tokenBank.sol";
 
-
+// 创建一个新的合约，继承自 OpenZeppelin 的 ERC20 合约
+contract MyToken is ERC20 {
+    // 构造函数将初始化 ERC20 供应量和代币名称
+    constructor(uint256 initialSupply) ERC20("MyToken", "MTK") {
+        // 通过 _mint 函数铸造初始供应量的代币到部署合约的地址
+        _mint(msg.sender, initialSupply);
+    }
+}
 // 目标合约需要实现的接口
 interface ITokenReceiver {
     function tokensReceived(address sender, uint256 amount) external returns (bool);

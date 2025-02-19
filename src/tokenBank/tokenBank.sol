@@ -5,6 +5,7 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+
 contract TokenBank {
     // 存储每个地址的 Token 余额
     mapping(address => mapping(address => uint256)) public balances;
@@ -42,18 +43,4 @@ contract TokenBank {
         require(success, "Transfer failed");
     }
 
-    // 获取用户的 Token 余额
-    // function getBalance(address user) external view returns (uint256) {
-    //     return balances[tokenAddress][user];
-    // }
-}
-
-
-// 创建一个新的合约，继承自 OpenZeppelin 的 ERC20 合约
-contract MyToken is ERC20 {
-    // 构造函数将初始化 ERC20 供应量和代币名称
-    constructor(uint256 initialSupply) ERC20("MyToken", "MTK") {
-        // 通过 _mint 函数铸造初始供应量的代币到部署合约的地址
-        _mint(msg.sender, initialSupply);
-    }
 }
