@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 import "forge-std/Script.sol";
-import { MyToken } from "../src/myToken/myToken.sol";
+import { MyToken } from "../src/myToken/DeployMyToken.sol";
 
 // 使用 Solidity 编写部署脚本
 contract DeployMyToken is Script {
-    function run() external {
+    function deploy() external {
         {
             // 获取部署者私钥
             uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
