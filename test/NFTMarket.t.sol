@@ -123,4 +123,54 @@ contract NFTMarketTest is Test {
         token.transferWithCallback(address(market), PRICE - 1 ether, abi.encode(NFT_ID));
         vm.stopPrank();
     }
+    // 模糊测试
+    function testFuzz_ListAndBuyNFT(uint256 price, address randomBuyer) public {
+        // 约束价格范围在 0.01-10000 Token之间
+        price = bound(price, 0.01 ether, 10000 ether);
+        
+        // 约束随机地址不能为零地址或已使用的地址
+        vm.assume(randomBuyer != address(0));
+        vm.assume(randomBuyer != seller);
+        vm.assume(randomBuyer != address(market));
+        vm.assume(randomBuyer != address(token));
+        vm.assume(randomBuyer != address(nft));
+
+        // 给随机买家铸造足够的代币
+        token.mint(randomBuyer, price * 2); // 铸造2倍价格的代币，确保足够支付
+
+        // 设置买家授权
+        vm.startPrank(randomBuyer);
+        token.approve(address(market), type(uint256).max);
+        vm.stopPrank();
+
+        uint256 tokenId = NFT_ID; // 使用第一个NFT
+        uint256 buyerInitialBalance = token.balanceOf(randomBuyer);
+
+        // 卖家上架NFT
+        vm.startPrank(seller);
+        market.list(tokenId, price);
+        vm.stopPrank();
+
+        // 验证上架信息
+        (uint256 listedPrice, address listedSeller, , ) = market.listings(tokenId);
+        assertEq(listedPrice, price);
+        assertEq(listedSeller, seller);
+
+        // 随机买家购买NFT
+        vm.startPrank(randomBuyer);
+        market.buyNFT(tokenId);
+        vm.stopPrank();
+
+        // 验证NFT所有权转移
+        assertEq(nft.ownerOf(tokenId), randomBuyer);
+        
+        // 验证代币转移
+        assertEq(token.balanceOf(seller), price);
+        assertEq(token.balanceOf(randomBuyer), buyerInitialBalance - price);
+
+        // 验证上架信息已被清除
+        (uint256 newListedPrice, address newListedSeller, , ) = market.listings(tokenId);
+        assertEq(newListedPrice, 0);
+        assertEq(newListedSeller, address(0));
+    }
 }
