@@ -15,7 +15,7 @@ contract TokenBankTest is Test{
         // 部署测试代币
         token = new TestToken();
         // 部署 TokenBank
-        bank = new TokenBank(address(token));
+        bank = new TokenBank();
         // 设置测试用户
         user = address(0x1);
         
@@ -33,7 +33,7 @@ contract TokenBankTest is Test{
         token.approve(address(bank), depositAmount);
         
         // 存款
-        bank.deposit(depositAmount);
+        bank.deposit(address(token),depositAmount);
         
         // 验证余额
         assertEq(bank.balances(address(token), user), depositAmount, "Deposit amount incorrect");
@@ -48,13 +48,13 @@ contract TokenBankTest is Test{
         // 先存款
         vm.startPrank(user);
         token.approve(address(bank), depositAmount);
-        bank.deposit(depositAmount);
+        bank.deposit(address(token),depositAmount);
         
         // 记录提款前的余额
         uint256 balanceBefore = token.balanceOf(user);
         
         // 提款
-        bank.withdraw(withdrawAmount);
+        bank.withdraw(address(token),withdrawAmount);
         
         // 验证银行中的余额
         assertEq(bank.balances(address(token), user), depositAmount - withdrawAmount, "Bank balance incorrect");
@@ -72,13 +72,13 @@ contract TokenBankTest is Test{
         // 先存款
         vm.startPrank(user);
         token.approve(address(bank), depositAmount);
-        bank.deposit(depositAmount);
+        bank.deposit(address(token),depositAmount);
         
         // 设置余额不足是的的错误捕获
         vm.expectRevert("Insufficient balance");
 
         // 尝试提取超过存款金额的代币（应该失败）
-        bank.withdraw(withdrawAmount);
+        bank.withdraw(address(token),withdrawAmount);
         
         vm.stopPrank();
     }

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.25;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 /**
  * @title 使用Foundry部署和开源合约
@@ -12,8 +13,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * 
  */
 
-contract MyToken is ERC20 { 
-    constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {
-        _mint(msg.sender, 1e10*1e18);
-    } 
+contract MyToken is ERC20, ERC20Permit {
+    constructor(uint256 initialSupply) ERC20("MyToken", "MTK") ERC20Permit("MyToken") {
+        _mint(msg.sender, initialSupply);
+    }
 }

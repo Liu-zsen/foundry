@@ -11,6 +11,11 @@ contract NFTMarket {
     // NFT 合约地址
     address public nftAddress;
 
+    // 签名者地址/项目方地址
+    address public signerAddress;
+
+    uint256 private nonce;
+
     // 上架的 NFT 信息
     struct Listing {
         uint256 price; // NFT 的价格（以 ERC20 Token 为单位）
@@ -30,9 +35,10 @@ contract NFTMarket {
     event Bought(uint256 indexed tokenId, address indexed buyer, address indexed seller, uint256 price);
 
     // 初始化时设置 ERC20 Token 和 NFT 合约地址 、签名者地址
-    constructor(address _tokenAddress, address _nftAddress) {
+    constructor(address _tokenAddress, address _nftAddress,address _signerAddress) {
         tokenAddress = _tokenAddress;
         nftAddress = _nftAddress;
+        signerAddress = _signerAddress;
     }
 
     // 上架 NFT
@@ -56,7 +62,7 @@ contract NFTMarket {
     }
 
     // 购买 NFT
-    function buyNFT(uint256 tokenId) external {
+    function buyNFT(uint256 tokenId) public {
         // 检查 NFT 是否已上架
         require(listings[tokenId].seller != address(0), "NFT not listed");
         // 获取上架信息
@@ -78,6 +84,14 @@ contract NFTMarket {
         emit Bought(tokenId, msg.sender, listing.seller, listing.price);
     }
 
+
+    // 白名单用户购买NFT的函数
+    function permitBuy(uint256 tokenId, bytes memory signature) external {
+        require(verifySignature(msg.sender, signature), "Invalid signature");
+        // 标记签名已使用
+        usedSignatures[signature] = true;
+        buyNFT(tokenId);
+    }
 
     // 实现 ERC20 扩展 Token 的接收者方法
     function tokensReceived(address sender, uint256 amount, bytes memory data) external returns (bool) {
@@ -101,5 +115,53 @@ contract NFTMarket {
         return true;
     }
 
+
+    /**
+     * 验证签名
+     * @param buyer 买方
+     * @param signature 验证白名单用户的签名数据
+     */
+    function verifySignature(
+        address buyer,
+        bytes memory signature
+    ) public returns (bool) {
+        // 1. 检查签名是否已经被使用
+        if (usedSignatures[signature]) return false;
+        // 检查签名者是否是签名者地址
+        // 构建消息哈希
+        bytes32 messageHash = keccak256(abi.encodePacked(buyer,nonce));
+        // 2. 添加以太坊签名前缀
+        bytes32 ethSignedMessageHash = keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash)
+        );
+        nonce++;
+        // 3. 从签名中恢复地址
+        address recoveredSigner = recoverSigner(ethSignedMessageHash, signature);
+        // 4. 验证恢复的地址是否为授权签名者
+        return recoveredSigner == signerAddress;
+    }
+
+    // 从签名中恢复签名者地址
+    function recoverSigner(bytes32 ethSignedMessageHash, bytes memory signature) internal pure returns (address) {
+        require(signature.length == 65, "Invalid signature length");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(signature, 32))
+            s := mload(add(signature, 64))
+            v := byte(0, mload(add(signature, 96)))
+        }
+        if (v < 27) {
+            v += 27;
+        }
+        require(v == 27 || v == 28, "Invalid signature 'v' value");
+        return ecrecover(ethSignedMessageHash, v, r, s);
+    }
+
+    // 修改函数名从 nonce 到 getNonce
+    function getNonce() external view returns (uint256) {
+        return nonce;
+    }
 
 }

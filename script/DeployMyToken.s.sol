@@ -14,7 +14,7 @@ contract DeployMyToken is Script {
             vm.startBroadcast(deployerPrivateKey);
 
             // 部署合约
-            MyToken token = new MyToken("MyToken", "MTK");
+            MyToken token = new MyToken(10 ** 18);
 
             address alice = makeAddr("alice");
             token.transfer(alice, 100 ether);
