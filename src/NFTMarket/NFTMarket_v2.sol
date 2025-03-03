@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+// sepolia: 0xeAbB786c1a08815C6Edb3B9041fF77eebC342Cd9
 contract NFTMarket {
     // 自己发行的 ERC20 Token 合约地址
     address public tokenAddress;
@@ -97,7 +97,7 @@ contract NFTMarket {
     function tokensReceived(address sender, uint256 amount, bytes memory data) external returns (bool) {
         // 检查调用者是否是 ERC20 Token 合约
         require(msg.sender == tokenAddress, "Invalid token");
-        // 解码 data 获取 tokenId
+
         uint256 tokenId = abi.decode(data, (uint256));
         // 检查 NFT 是否已上架
         require(listings[tokenId].seller != address(0), "NFT not listed");
