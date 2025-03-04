@@ -73,6 +73,9 @@ contract TokenBank {
         IERC20 token = IERC20(data.tokenAddress);
         // 从调用者转移代币到合约
         require(token.transferFrom(msg.sender, address(this), data.amount), "Transfer failed");
+        // 涉及到代币转移,都用safeTransferFrom
+        // safeTransferFrom(token ,msg.sender, address(this), data.amount);
+
         // 更新用户在该代币中的余额
         balances[msg.sender][data.tokenAddress] += data.amount;
         emit PermitDeposited(msg.sender, data.tokenAddress, data.amount);

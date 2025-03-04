@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import {TokenBank} from "../src/tokenBank/tokenBank.sol";
+import {TokenBank} from "../src/tokenBank/tokenBank_permit2.sol";
 
 contract SimulateDeposit is Script {
     function run() external {

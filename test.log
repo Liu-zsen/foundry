@@ -1,0 +1,41 @@
+Compiling 4 files with Solc 0.8.28
+Solc 0.8.28 finished in 1.97s
+Compiler run successful!
+
+Ran 2 tests for test/Counter.t.sol:CounterTest
+[PASS] testFuzz_SetNumber(uint256) (runs: 256, μ: 32198, ~: 32354)
+[PASS] test_Increment() (gas: 31851)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 4.00s (27.66ms CPU time)
+
+Ran 3 tests for test/tokenBank.t.sol:TokenBankTest
+[FAIL: Deposit amount incorrect: 0 != 100000000000000000000] test_Deposit() (gas: 104944)
+[PASS] test_RevertWithdrawInsufficientBalance() (gas: 82776)
+[FAIL: Bank balance incorrect: 0 != 50000000000000000000] test_Withdraw() (gas: 116055)
+Suite result: FAILED. 1 passed; 2 failed; 0 skipped; finished in 6.42ms (3.40ms CPU time)
+
+Ran 1 test for test/Bank.t.sol:BankTest
+[PASS] testDepositETH() (gas: 50511)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 4.28s (306.64ms CPU time)
+
+Ran 4 tests for test/factory.t.sol:InscriptionFactoryTest
+[PASS] testUpgradeCompatibility() (gas: 1372080)
+[PASS] testV1DeployAndMint() (gas: 1070445)
+[PASS] testV2DeployAndMint() (gas: 318571)
+[PASS] testV2MintPayment() (gas: 345590)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 4.92s (992.97ms CPU time)
+
+Ran 4 tests for test/NFTMarket_v2.t.sol:NFTMarket_v2Test
+[PASS] test_BuyNFT() (gas: 242560)
+[PASS] test_ListNFT() (gas: 167277)
+[PASS] test_PermitBuy() (gas: 290440)
+[PASS] test_RevertInvalidSignature() (gas: 205837)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 5.21s (597.07ms CPU time)
+
+Ran 5 test suites in 8.27s (18.43s CPU time): 12 tests passed, 2 failed, 0 skipped (14 total tests)
+
+Failing tests:
+Encountered 2 failing tests in test/tokenBank.t.sol:TokenBankTest
+[FAIL: Deposit amount incorrect: 0 != 100000000000000000000] test_Deposit() (gas: 104944)
+[FAIL: Bank balance incorrect: 0 != 50000000000000000000] test_Withdraw() (gas: 116055)
+
+Encountered a total of 2 failing tests, 12 tests succeeded
