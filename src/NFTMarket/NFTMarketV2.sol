@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-// sepolia: 0xeAbB786c1a08815C6Edb3B9041fF77eebC342Cd9
-contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable {
+// sepolia: 0x17688ebea116f0ccdd068bf45e248777bc895900
+contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
     address public tokenAddress;
 
     address public nftAddress;
@@ -20,8 +21,8 @@ contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable {
 
     // 上架的 NFT 信息
     struct Listing {
-        uint256 price; // NFT 的价格（以 ERC20 Token 为单位）
-        address seller; // NFT 的卖家
+        uint256 price; 
+        address seller;
     }
 
     // 记录每个上架的 NFT 信息
@@ -169,7 +170,6 @@ contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable {
         return nonce;
     }
 
-
     // 取消上架
     function cancelListing(uint256 tokenId) external {
         require(listings[tokenId].seller == msg.sender, "Not the seller");
@@ -189,4 +189,5 @@ contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable {
         signerAddress = _signerAddress;
     }
 
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
