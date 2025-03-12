@@ -17,16 +17,13 @@ contract NFTMarket {
         address seller; // NFT 的卖家
     }
 
-    // 记录每个上架的 NFT 信息
     mapping(uint256 => Listing) public listings;
 
     // 记录已使用的签名，防止重复使用
     mapping(bytes => bool) public usedSignatures;
     
 
-    // 事件：NFT 上架
     event Listed(uint256 indexed tokenId, address indexed seller, uint256 price);
-    // 事件：NFT 购买
     event Bought(uint256 indexed tokenId, address indexed buyer, address indexed seller, uint256 price);
 
     // 初始化时设置 ERC20 Token 和 NFT 合约地址 、签名者地址
@@ -77,7 +74,6 @@ contract NFTMarket {
         delete listings[tokenId];
         emit Bought(tokenId, msg.sender, listing.seller, listing.price);
     }
-
 
     // 实现 ERC20 扩展 Token 的接收者方法
     function tokensReceived(address sender, uint256 amount, bytes memory data) external returns (bool) {
