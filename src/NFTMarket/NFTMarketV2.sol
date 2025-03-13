@@ -31,10 +31,7 @@ contract NFTMarket is Initializable, ERC721Upgradeable, OwnableUpgradeable, UUPS
     // 记录已使用的签名，防止重复使用
     mapping(bytes => bool) public usedSignatures;
     
-
-    // 事件：NFT 上架
     event Listed(uint256 indexed tokenId, address indexed seller, uint256 price);
-    // 事件：NFT 购买
     event Bought(uint256 indexed tokenId, address indexed buyer, address indexed seller, uint256 price);
 
     /// @custom:oz-upgrades-unsafe-allow constructor

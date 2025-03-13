@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
-import "../src/NFTMarket/NFTMarket_v2.sol";
+import "../src/NFTMarket/NFTMarket_v2_test.sol";
 import "../src/myToken/myToken.sol";
 import "../src/myToken/myNFT.sol";
 
