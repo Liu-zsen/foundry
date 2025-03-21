@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "./IStaking.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract StakingPool is IStaking, ReentrancyGuard, Ownable {
     // KK Token 合约
     IToken public immutable kkToken;
     
-    // 每区块产出的代币数量
-    uint256 public constant REWARD_PER_BLOCK = 10e18; // 10 KK Token per block
+    // 每区块产出10个代币数量 
+    uint256 public constant REWARD_PER_BLOCK = 10e18; // 
     
     // 用户质押信息
     struct UserInfo {
@@ -31,7 +31,7 @@ contract StakingPool is IStaking, ReentrancyGuard, Ownable {
     // 用户信息映射
     mapping(address => UserInfo) public userInfo;
     
-    constructor(address _kkToken) {
+    constructor(address _kkToken) Ownable(msg.sender) {
         kkToken = IToken(_kkToken);
         lastRewardBlock = block.number;
     }

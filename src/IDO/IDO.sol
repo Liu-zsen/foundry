@@ -16,7 +16,7 @@ contract IDO is Ownable {
         bool claimed;          
         bool successful;       
     }
-    // 状态变量
+    // 状态变量 
     Sale public sale;
     mapping(address => uint96) public investments;  // 用户投资金额
     mapping(address => bool) public tokensClaimed;  // 用户是否已领取代币
