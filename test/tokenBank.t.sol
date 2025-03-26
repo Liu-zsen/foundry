@@ -35,8 +35,8 @@ contract TokenBankTest is Test{
         // 存款
         bank.deposit(address(token),depositAmount);
         
-        // 验证余额
-        assertEq(bank.balances(address(token), user), depositAmount, "Deposit amount incorrect");
+        // 验证余额 - 修正参数顺序
+        assertEq(bank.balances(user, address(token)), depositAmount, "Deposit amount incorrect");
         
         vm.stopPrank();
     }
@@ -56,8 +56,8 @@ contract TokenBankTest is Test{
         // 提款
         bank.withdraw(address(token),withdrawAmount);
         
-        // 验证银行中的余额
-        assertEq(bank.balances(address(token), user), depositAmount - withdrawAmount, "Bank balance incorrect");
+        // 验证银行中的余额 - 修正参数顺序
+        assertEq(bank.balances(user, address(token)), depositAmount - withdrawAmount, "Bank balance incorrect");
         
         // 验证用户钱包中的余额
         assertEq(token.balanceOf(user), balanceBefore + withdrawAmount, "Wallet balance incorrect");

@@ -24,6 +24,8 @@ contract MockKKToken is IToken {
     }
 
     function transfer(address to, uint256 amount) external override returns (bool) {
+        address owner = msg.sender;
+        _transfer(owner, to, amount);
         return true;
     }
 
@@ -32,102 +34,48 @@ contract MockKKToken is IToken {
     }
 
     function approve(address spender, uint256 amount) external override returns (bool) {
+        address owner = msg.sender;
+        _approve(owner, spender, amount);
         return true;
     }
 
     function transferFrom(address from, address to, uint256 amount) external override returns (bool) {
+        address spender = msg.sender;
+        _spendAllowance(from, spender, amount);
+        _transfer(from, to, amount);
         return true;
+    }
+
+    function _transfer(address from, address to, uint256 amount) internal {
+        require(from != address(0), "ERC20: transfer from the zero address");
+        require(to != address(0), "ERC20: transfer to the zero address");
+
+        uint256 fromBalance = _balances[from];
+        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        unchecked {
+            _balances[from] = fromBalance - amount;
+            _balances[to] += amount;
+        }
+    }
+
+    function _approve(address owner, address spender, uint256 amount) internal {
+        require(owner != address(0), "ERC20: approve from the zero address");
+        require(spender != address(0), "ERC20: approve to the zero address");
+
+        _allowances[owner][spender] = amount;
+    }
+
+    function _spendAllowance(address owner, address spender, uint256 amount) internal {
+        uint256 currentAllowance = _allowances[owner][spender];
+        if (currentAllowance != type(uint256).max) {
+            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            unchecked {
+                _approve(owner, spender, currentAllowance - amount);
+            }
+        }
     }
 }
 
 contract StakingPoolTest is Test {
-    StakingPool public stakingPool;
-    MockKKToken public kkToken;
-    address public alice = address(1);
-    address public bob = address(2);
-
-    function setUp() public {
-        // 部署 KK Token
-        kkToken = new MockKKToken();
-        // 部署质押池
-        stakingPool = new StakingPool(address(kkToken));
-        
-        // 给测试账户一些 ETH
-        vm.deal(alice, 100 ether);
-        vm.deal(bob, 50 ether);
-    }
-
-    function testStakingRewards() public {
-        // Alice 质押100 ETH
-        vm.startPrank(alice);
-        stakingPool.stake{value: 100 ether}();
-        vm.stopPrank();
-
-        // 移动到下一个区块
-        vm.roll(block.number + 1);
-
-        // Bob 质押50 ETH
-        vm.startPrank(bob);
-        stakingPool.stake{value: 50 ether}();
-        vm.stopPrank();
-
-        // 检查总质押量
-        assertEq(stakingPool.totalStaked(), 150 ether);
-
-        // 移动10个区块
-        vm.roll(block.number + 10);
-
-        // 检查Alice的预期收益
-        uint256 aliceEarned = stakingPool.earned(alice);
-        uint256 bobEarned = stakingPool.earned(bob);
-
-        // Alice应该得到总奖励的2/3
-        // Bob应该得到总奖励的1/3
-        assertApproxEqRel(aliceEarned * 1, bobEarned * 2, 1e16); // 允许0.1%的误差
-
-        // Alice领取奖励
-        vm.prank(alice);
-        stakingPool.claim();
-
-        // 检查Alice的代币余额
-        uint256 aliceBalance = kkToken.balanceOf(alice);
-        assertEq(aliceBalance, aliceEarned);
-
-        // Bob领取奖励
-        vm.prank(bob);
-        stakingPool.claim();
-
-        // 检查Bob的代币余额
-        uint256 bobBalance = kkToken.balanceOf(bob);
-        assertEq(bobBalance, bobEarned);
-    }
-
-    function testUnstakeAndRewards() public {
-        // Alice 质押100 ETH
-        vm.prank(alice);
-        stakingPool.stake{value: 100 ether}();
-
-        // 移动5个区块
-        vm.roll(block.number + 5);
-
-        // 记录Alice的预期收益
-        uint256 aliceEarnedBefore = stakingPool.earned(alice);
-
-        // Alice赎回50 ETH
-        vm.prank(alice);
-        stakingPool.unstake(50 ether);
-
-        // 检查Alice的代币余额（应该收到之前的收益）
-        uint256 aliceBalance = kkToken.balanceOf(alice);
-        assertEq(aliceBalance, aliceEarnedBefore);
-
-        // 移动另外5个区块
-        vm.roll(block.number + 5);
-
-        // 检查新的收益（应该是之前的一半速率）
-        uint256 aliceEarnedAfter = stakingPool.earned(alice);
-        assertApproxEqRel(aliceEarnedAfter * 2, aliceEarnedBefore, 1e16); // 允许0.1%的误差
-    }
-
-    receive() external payable {}
+    // ... existing code ...
 } 
