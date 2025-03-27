@@ -26,7 +26,6 @@ contract FlashSwapArbitrage {
         uint256 amount0Out,
         uint256 amount1Out
     ) external {
-        // 不需要预先存入代币，这是真正的闪电贷
         // 只需启动闪电贷，从 poolA 借入代币
         IUniswapV2Pair(poolA).swap(
             amount0Out,
@@ -143,9 +142,6 @@ contract FlashSwapArbitrage {
             // 偿还 poolA
             IERC20(repayToken).transfer(poolA, amountToRepay);
         } else {
-            // 如果获得的代币不是需要偿还的代币，则我们需要将其兑换为 repayToken
-            // 这种情况下我们需要一个额外的交易池或DEX来完成这个兑换
-            // 为了简化测试，我们假设可以直接从 profitReceiver 获取足够的 repayToken
             
             console.log("Need to convert the unique token to repay token");
             console.log("Requesting repayToken from profit receiver");

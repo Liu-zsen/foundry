@@ -26,11 +26,11 @@ contract FlashSwapArbitrageTest is Test {
     address profitReceiver = makeAddr("profitReceiver");
     
     // Initial test parameters
-    uint256 constant INITIAL_SUPPLY = 1_000_000 ether; // Initial supply for each token
-    uint256 constant POOL_A_LIQUIDITY_A = 100 ether;   // Initial TokenA liquidity in PoolA
-    uint256 constant POOL_A_LIQUIDITY_B = 200 ether;   // Initial TokenB liquidity in PoolA
-    uint256 constant POOL_B_LIQUIDITY_A = 100 ether;   // Initial TokenA liquidity in PoolB
-    uint256 constant POOL_B_LIQUIDITY_C = 150 ether;   // Initial TokenC liquidity in PoolB (different token but same price ratio)
+    uint256 constant INITIAL_SUPPLY = 1_000_000 ether; 
+    uint256 constant POOL_A_LIQUIDITY_A = 100 ether;  
+    uint256 constant POOL_A_LIQUIDITY_B = 200 ether;
+    uint256 constant POOL_B_LIQUIDITY_A = 100 ether;   
+    uint256 constant POOL_B_LIQUIDITY_C = 150 ether;
     
     // 存储测试前的余额
     uint256 profitReceiverBalanceA_Before;
